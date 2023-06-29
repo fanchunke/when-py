@@ -16,13 +16,15 @@ include = [
 ]
 
 [tool.pdm.dev-dependencies]
-test = [
+linting = [
     "black>=23.3.0",
-    "flake8>=2.3.0",
     "mypy>=1.4.1",
     "isort>=5.11.5",
-    "autoflake>=2.1.1",
     "setuptools>=68.0.0",
+]
+build = [
+    "build>=0.10.0",
+    "twine>=4.0.2",
 ]
 
 [project]
@@ -57,7 +59,6 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Internet',
 ]
-dynamic = ['version', 'readme']
 
 [tool.black]
 color = true
@@ -68,3 +69,6 @@ skip-string-normalization = true
 [tool.isort]
 profile = "black"
 
+[project.urls]
+Homepage = 'https://github.com/fanchunke/when-py'
+Source = 'https://github.com/fanchunke/when-py'
