@@ -1,6 +1,8 @@
 import datetime
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Optional
+
+from when.logger import logger
 
 
 @dataclass
@@ -16,92 +18,48 @@ class Context(object):
     second: Optional[int] = field(default=None)
     tzinfo: Optional[datetime.tzinfo] = field(default=None)
 
-    def time(self, t: datetime.datetime) -> datetime.datetime:
+    def time(self, t: datetime.datetime) -> Optional[datetime.datetime]:
         if self.duration is not None:
             t = t + self.duration
 
-        if self.year is not None:
-            t = datetime.datetime(
-                self.year,
-                t.month,
-                t.day,
-                t.hour,
-                t.minute,
-                t.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.year is None:
+            self.year = t.year
 
-        if self.month is not None:
-            t = datetime.datetime(
-                t.year,
-                self.month,
-                t.day,
-                t.hour,
-                t.minute,
-                t.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.month is None:
+            self.month = t.month
 
-        if self.day is not None:
-            t = datetime.datetime(
-                t.year,
-                t.month,
-                self.day,
-                t.hour,
-                t.minute,
-                t.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.day is None:
+            self.day = t.day
 
-        if self.hour is not None:
-            t = datetime.datetime(
-                t.year,
-                t.month,
-                t.day,
-                self.hour,
-                t.minute,
-                t.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.weekday is not None:
+            diff = self.weekday - t.weekday()
+            self.day = self.day + diff
 
-        if self.minute is not None:
-            t = datetime.datetime(
-                t.year,
-                t.month,
-                t.day,
-                t.hour,
-                self.minute,
-                t.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.hour is None:
+            self.hour = t.hour
 
-        if self.second is not None:
-            t = datetime.datetime(
-                t.year,
-                t.month,
-                t.day,
-                t.hour,
-                t.minute,
-                self.second,
-                t.microsecond,
-                t.tzinfo,
-            )
+        if self.minute is None:
+            self.minute = t.minute
 
-        if self.tzinfo is not None:
-            t = datetime.datetime(
-                t.year,
-                t.month,
-                t.day,
-                t.hour,
-                t.minute,
-                t.second,
-                t.microsecond,
-                self.tzinfo,
-            )
+        if self.second is None:
+            self.second = t.second
 
-        return t
+        if self.tzinfo is None:
+            self.tzinfo = t.tzinfo
+
+        try:
+            result = datetime.datetime(
+                year=self.year,
+                month=self.month,
+                day=self.day,
+                hour=self.hour,
+                minute=self.minute,
+                second=self.second,
+                microsecond=t.microsecond,
+                tzinfo=self.tzinfo,
+            )
+        except Exception as e:
+            logger.warning(f"parse time failed. context: {asdict(self)}, error: {e}")
+            return None
+        else:
+            return result

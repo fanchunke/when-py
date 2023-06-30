@@ -1,4 +1,4 @@
-SOURCE_FILES=when
+SOURCE_FILES=when tests
 
 # 代码检查
 check:
@@ -10,6 +10,10 @@ check:
 format:
 	pdm run isort ${SOURCE_FILES}
 	pdm run black ${SOURCE_FILES}
+
+.PHONY: test
+test:
+	pdm run pytest -s -v --cov=${SOURCE_FILES}
 
 .PHONY: clean  ## Clear local caches and build artifacts
 clean:

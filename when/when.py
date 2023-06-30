@@ -22,7 +22,7 @@ MiddlewareFunc = Callable[[str], str]
 
 @dataclass
 class Parser(object):
-    options: Optional[Options] = field(default=Options(distance=5, match_by_order=True))
+    options: Optional[Options] = field(default_factory=Options.default)
     rules: List[Rule] = field(default_factory=list)
     middlewares: List[MiddlewareFunc] = field(default_factory=list)
 
@@ -80,7 +80,10 @@ class Parser(object):
         if not applied:
             return None
 
-        result.time = ctx.time(result.time)
+        ctx_time = ctx.time(result.time)
+        if ctx_time is None:
+            return None
+        result.time = ctx_time
         return result
 
     def add(self, r: List[Rule]) -> None:

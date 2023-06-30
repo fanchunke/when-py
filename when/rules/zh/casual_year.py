@@ -1,6 +1,8 @@
 import datetime
 import re
+from dataclasses import asdict
 
+from when.logger import logger
 from when.rules import F, Match, Options, Rule, Strategy
 from when.rules.context import Context
 from when.rules.zh import pattern, utils
@@ -12,7 +14,8 @@ def casual_year(s: Strategy) -> Rule:
     return F(format=format, regexp=regexp, applier=casual_year_applier)
 
 
-def casual_year_applier(m: Match, ctx: Context, op: Options, t: datetime.datetime) -> bool:
+def casual_year_applier(m: Match, ctx: Context, op: Options, base: datetime.datetime) -> bool:
+    logger.debug(f"casual_year matched: {asdict(m)}")
     ctx.hour = 0
     ctx.minute = 0
     ctx.second = 0
@@ -22,8 +25,10 @@ def casual_year_applier(m: Match, ctx: Context, op: Options, t: datetime.datetim
         if year == "" or year is None:
             continue
 
-        year_int, ok = utils.parse_year_from_casual_year(year)
+        dt, ok = utils.parse_year_from_casual_year(year, base)
         if ok:
-            ctx.year = year_int
+            ctx.year = dt.year
+            ctx.month = dt.month
+            ctx.day = dt.day
 
     return True

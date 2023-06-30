@@ -23,6 +23,10 @@ class Options(object):
     distance: int = field(default=0)
     match_by_order: bool = field(default=False)
 
+    @staticmethod
+    def default() -> 'Options':
+        return Options(distance=5, match_by_order=True)
+
 
 ApplierFunc = Callable[["Match", Context, Options, datetime.datetime], bool]
 

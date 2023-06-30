@@ -1,8 +1,8 @@
 from typing import List
 
 from when.rules import Rule, Strategy
-from when.rules.zh.casual_year import casual_year
+from when.rules.zh.casual_date import casual_date
 
 all: List[Rule] = [
-    casual_year(Strategy.Override),
+    casual_date(Strategy.Override),
 ]
